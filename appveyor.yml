@@ -9,8 +9,8 @@ before_build:
 - ps: >-
     (Get-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h") | %{$_ -replace "^RtlDecryptMemory\($", "__stdcall RtlDecryptMemory("} | Set-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h";
     Copy-Item C:\projects\mimikatz\mimikatz\mimikatz.ico C:\projects\mimikatz\mimikatz\hahapoint.ico;
-    (Get-ChildItem -Path "." -Recurse -File -Include *.h,*.c,*.vcxproj,*.rc,*.vcxproj.filters) | ForEach-Object {
-        $newFileName = $_.Name -replace "mimikatz\.(h|c|rc|vcxproj|vcxproj.filters)", "hahapoint.`$1"
+    (Get-ChildItem -Path "." -Recurse -File -Include *.h,*.c,*.vcxproj,*.rc) | ForEach-Object {
+        $newFileName = $_.Name -replace "mimikatz\.(h|c|rc)", "hahapoint.`$1"
         $newPath = Join-Path -Path $_.Directory.FullName -ChildPath $newFileName
         (Get-Content $_.FullName) | ForEach-Object {
             $_ -ireplace "mimikatz", "hahapoint"
