@@ -6,7 +6,21 @@ platform:
 - Win32
 shallow_clone: true
 before_build:
-- ps: (Get-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h") | %{$_ -replace "^RtlDecryptMemory\($", "__stdcall RtlDecryptMemory("} | Set-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h"
+- ps: >-
+    (Get-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h") | %{$_ -replace "^RtlDecryptMemory\($", "__stdcall RtlDecryptMemory("} | Set-Content "C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Include\ntsecapi.h";
+    Copy-Item C:\projects\mimikatz\mimikatz\mimikatz.ico C:\projects\mimikatz\mimikatz\hahapoint.ico;
+    (Get-ChildItem -Path "." -Recurse -File -Include *.h,*.c,*.vcxproj,*.rc) | ForEach-Object {
+        $newFileName = $_.Name -replace "mimikatz\.(h|c|rc)", "aabbcc.`$1"
+        $newPath = Join-Path -Path $_.Directory.FullName -ChildPath $newFileName
+        (Get-Content $_.FullName) | ForEach-Object {
+            $_ -ireplace "mimikatz", "aabbcc"
+        } | Set-Content $newPath
+        if ($newFileName -ne $_.Name) {
+            Remove-Item $_.FullName
+        }
+        Write-Host $newPath
+    };
+    ls mimikatz;
 build:
   parallel: true
   verbosity: normal
